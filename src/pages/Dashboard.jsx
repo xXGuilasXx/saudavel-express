@@ -32,7 +32,7 @@ function Dashboard() {
 
   return (
     <Box className="p-4 bg-gray-100 min-h-screen">
-      <Typography variant="h4" textAlign="center" className="text-gray-800 mb-4">
+      <Typography variant="h4" textAlign="center" className="text-gray-800 p-4">
         Olá, {cliente.Nome || "Cliente"}
       </Typography>
       <Divider className="my-4" />
@@ -41,13 +41,21 @@ function Dashboard() {
           variant="contained"
           color="primary"
           onClick={() => navigate("/pedido")}
-          className="bg-blue-500 hover:bg-blue-600"
+          className="bg-green-500 hover:bg-green-600 mt-2"
+          sx={{
+            padding: "10px 20px", fontSize: "16px", fontWeight: "bold", 
+            marginTop: "10px", backgroundColor: "green", 
+            "&:hover": { backgroundColor: "darkgreen" }, 
+            color: "white", borderRadius: "8px",
+            transition: "background-color 0.3s ease",
+            "&:active": { backgroundColor: "white", color: "green" }
+          }}
         >
           Fazer novo pedido
         </Button>
       </Box>
       <Divider className="my-4" />
-      <Typography variant="h5" className="text-gray-800 mb-2">
+      <Typography variant="h5" className="text-gray-800 mb-4 text-center" sx={{ fontWeight: "bold", margin: "20px 0" }}>
         Histórico de Pedidos
       </Typography>
       <List className="bg-white shadow rounded-lg">
@@ -73,6 +81,14 @@ function Dashboard() {
           color="secondary"
           onClick={handleLogout}
           className="border-red-500 text-red-500 hover:bg-red-100"
+          sx={{
+            padding: "10px 20px", fontSize: "16px", fontWeight: "bold", 
+            marginTop: "10px", borderColor: "red", 
+            "&:hover": { backgroundColor: "red", color: "white" }, 
+            color: "red", borderRadius: "8px",
+            transition: "background-color 0.3s ease",
+            "&:active": { backgroundColor: "white", color: "red" }
+          }}
         >
           Sair
         </Button>

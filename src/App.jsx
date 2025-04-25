@@ -14,8 +14,6 @@ const ProtectedRoute = ({ element }) => {
 const App = () => {
   return (
     <Router>
-      <div className="p-4 flex flex-col items-center bg-gray-200 min-h-screen">
-        <h1 className="text-3xl text-gray-800 p-4">Delivery Saudável</h1>
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
@@ -24,7 +22,7 @@ const App = () => {
           <Route path="/pedido-realizado" element={<ProtectedRoute element={<PedidoRealizado />} />} />
           <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
         </Routes>
-      </div>
+        
     </Router>
   );
 };

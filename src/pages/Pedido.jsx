@@ -15,7 +15,48 @@ import {
   Divider,
 } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
+import { styled } from "@mui/system";
 import db from "../database/db";
+
+// Estilização personalizada
+const StyledCard = styled(Card)({
+  borderRadius: "15px",
+  boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+  backgroundColor: "#f9f9f9",
+});
+
+const StyledButton = styled(Button)({
+  borderRadius: "20px",
+  fontWeight: "bold",
+});
+
+const AddButton = styled(IconButton)({
+  backgroundColor: "#4caf50",
+  color: "#fff",
+  "&:hover": {
+    backgroundColor: "#45a049",
+  },
+});
+
+const RemoveButton = styled(IconButton)({
+  backgroundColor: "#f44336",
+  color: "#fff",
+  "&:hover": {
+    backgroundColor: "#e53935",
+  },
+});
+
+const StyledBox = styled(Box)({
+  backgroundColor: "#e8f5e9",
+  padding: "20px",
+  borderRadius: "10px",
+  boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+});
+
+const StyledTypography = styled(Typography)({
+  color: "#388e3c",
+  fontWeight: "bold",
+});
 
 function Pedido() {
   const navigate = useNavigate();
@@ -90,16 +131,24 @@ function Pedido() {
   };
 
   return (
-    <Box p={2}>
-      <Typography variant="h4" textAlign="center" gutterBottom>
+    <StyledBox p={2}>
+      <StyledTypography variant="h4" textAlign="center" gutterBottom>
         Pedido
-      </Typography>
-      <Grid container spacing={2}>
+      </StyledTypography>
+      <Grid container spacing={4} sx={{
+        margin: 1,
+        alignContent: "center !important",
+        alignItems: "center !important", justifyContent: "center",
+        display: "flex !important"
+      }}
+      >
         {produtos.map((produto) => (
           <Grid item xs={12} sm={6} md={4} key={produto.idProduto}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6">{produto.nome}</Typography>
+            <StyledCard >
+              <CardContent sx={{ textAlign: "center", padding: 5 }}>
+                <Typography variant="h6" color="primary">
+                  {produto.nome}
+                </Typography>
                 <Box
                   className="rounded-lg overflow-hidden"
                   style={{
@@ -108,7 +157,7 @@ function Pedido() {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    backgroundColor: "#f5f5f5",
+                    backgroundColor: "#f1f8e9",
                   }}
                 >
                   <img
@@ -124,27 +173,27 @@ function Pedido() {
                   {(produto.valorUnitario * (quantidades[produto.idProduto] || 0)).toFixed(2)}
                 </Typography>
                 <Box display="flex" alignItems="center" mt={2}>
-                  <IconButton
+                  <RemoveButton
                     onClick={() => handleQuantidadeChange(produto.idProduto, -1)}
                     disabled={(quantidades[produto.idProduto] || 0) === 0}
                   >
                     <Remove />
-                  </IconButton>
-                  <Typography>{quantidades[produto.idProduto] || 0}</Typography>
-                  <IconButton
+                  </RemoveButton>
+                  <Typography mx={2}>{quantidades[produto.idProduto] || 0}</Typography>
+                  <AddButton
                     onClick={() => handleQuantidadeChange(produto.idProduto, 1)}
                     disabled={(quantidades[produto.idProduto] || 0) === 10}
                   >
                     <Add />
-                  </IconButton>
+                  </AddButton>
                 </Box>
               </CardContent>
-            </Card>
+            </StyledCard>
           </Grid>
         ))}
       </Grid>
       <Box mt={4}>
-        <Typography variant="h5">Resumo do Pedido</Typography>
+        <StyledTypography variant="h5">Resumo do Pedido</StyledTypography>
         <Typography>Subtotal: R${subtotal.toFixed(2)}</Typography>
         <Typography>Frete: R${frete.toFixed(2)}</Typography>
         <Typography>Total: R${(subtotal + frete).toFixed(2)}</Typography>
@@ -164,24 +213,25 @@ function Pedido() {
           </Select>
         </FormControl>
         <Box mt={2} display="flex" justifyContent="space-between">
-          <Button
+          <StyledButton
             variant="outlined"
             color="secondary"
             onClick={() => navigate("/dashboard")}
+            sx={{ backgroundColor: "#f44336", color: "#fff" }}
           >
             Cancelar
-          </Button>
-          <Button
+          </StyledButton>
+          <StyledButton
             variant="contained"
             color="primary"
             onClick={handleConfirmarPedido}
             disabled={subtotal === 0}
           >
             Confirmar Pedido
-          </Button>
+          </StyledButton>
         </Box>
       </Box>
-    </Box>
+    </StyledBox>
   );
 }
 
