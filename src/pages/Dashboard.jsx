@@ -10,7 +10,12 @@ function Dashboard() {
 
   useEffect(() => {
     const fetchClienteEPedidos = async () => {
-      const clienteLogado = await db.Cliente.toCollection().first(); // Simula cliente logado
+      const loggedUserId = localStorage.getItem("loggedUserId");
+      if (!loggedUserId) {
+        navigate("/login");
+        return;
+      }
+      const clienteLogado = await db.Cliente.get(Number(loggedUserId));
       setCliente(clienteLogado || {});
       if (clienteLogado) {
         const pedidosCliente = await db.Pedido.where("idCliente").equals(clienteLogado.idCliente).toArray();
@@ -21,7 +26,7 @@ function Dashboard() {
   }, []);
 
   const handleLogout = () => {
-    // Simula logout
+    localStorage.removeItem("loggedUserId"); // Remove o ID do usuário logado
     navigate("/login");
   };
 

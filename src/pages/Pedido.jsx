@@ -62,12 +62,18 @@ function Pedido() {
   };
 
   const handleConfirmarPedido = async () => {
+    const loggedUserId = localStorage.getItem("loggedUserId");
+    if (!loggedUserId) {
+      navigate("/login");
+      return;
+    }
+
     const formaPagamento = formasPagamento.find(
       (forma) => forma.idFormaPagamento === formaPagamentoSelecionada
     );
 
     const pedido = {
-      idCliente: 1, // Simula cliente logado
+      idCliente: Number(loggedUserId), // Usa o ID do cliente logado
       idProdutos: Object.entries(quantidades)
         // eslint-disable-next-line no-unused-vars
         .filter(([_, quantidade]) => quantidade > 0)

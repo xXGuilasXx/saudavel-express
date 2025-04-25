@@ -18,7 +18,12 @@ function Cliente() {
 
   useEffect(() => {
     const fetchCliente = async () => {
-      const clienteLogado = await db.Cliente.toCollection().first(); // Simula cliente logado
+      const loggedUserId = localStorage.getItem("loggedUserId");
+      if (!loggedUserId) {
+        navigate("/login");
+        return;
+      }
+      const clienteLogado = await db.Cliente.get(Number(loggedUserId));
       setCliente(clienteLogado || {});
     };
     fetchCliente();

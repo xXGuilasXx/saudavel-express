@@ -10,6 +10,7 @@ import {
     Link,
 } from "@mui/material";
 import db from "../database/db";
+import logo from "../assets/images/logo/Logo.png"; // Importando a imagem corretamente
 
 const Login = () => {
     const navigate = useNavigate();
@@ -36,11 +37,13 @@ const Login = () => {
         const user = await db.Cliente.where({ email, senha }).first();
         if (user) {
             console.log("Usuário autenticado com sucesso!");
+            localStorage.setItem("loggedUserId", user.idCliente); // Salva o ID do usuário logado
             navigate("/dashboard");
         } else {
             alert("Falha na autenticação. Tente novamente.");
         }
     };
+
 
     const handleCreateAccount = async (e) => {
         e.preventDefault();
@@ -68,6 +71,13 @@ const Login = () => {
         >
             <Card sx={{ maxWidth: 400, width: "100%", padding: 2 }}>
                 <CardContent>
+                    <Box display="flex" justifyContent="center" mb={2}>
+                        <img
+                            src={logo} // Usando a imagem importada
+                            alt="Logo Saudável Express"
+                            style={{ maxWidth: "300px" }}
+                        />
+                    </Box>
                     <Typography variant="h5" textAlign="center" gutterBottom>
                         {isCreatingAccount ? "Criar Conta" : "Login"}
                     </Typography>
