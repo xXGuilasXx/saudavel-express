@@ -1,33 +1,86 @@
+import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Box, Typography, Divider, Table, TableBody, TableCell, TableHead, TableRow, Button } from "@mui/material";
+import db from "../database/db";
+
 function PedidoRealizado() {
-  const numeroPedido = 123456; // Exemplo de número do pedido, você pode obter isso de uma API ou estado global
+  const { state } = useLocation();
+  const { pedido, produtos } = state || {};
+  const [cliente, setCliente] = useState({});
+
+  useEffect(() => {
+    const fetchCliente = async () => {
+      const clienteLogado = await db.Cliente.get(pedido?.idCliente);
+      setCliente(clienteLogado || {});
+    };
+    fetchCliente();
+  }, [pedido]);
+
+  const produtosPedido = pedido?.idProdutos.map((item) => {
+    const produto = produtos.find((p) => p.idProduto === item.idProduto);
+    return { ...produto, quantidade: item.quantidade };
+  });
+
   return (
-    <div>
-      <h1>Pedido N{numeroPedido}</h1>
-      <p>Seu pedido foi realizado com sucesso!</p>
-      <h2>Lista de Produtos</h2>
-      <ul>
-        <li>Produto 1</li>
-        <li>Produto 2</li>
-        <li>Produto 3</li>
-        <li>Produto 4</li>
-        <li>Produto 5</li>
-        <li>Produto 6</li>
-      </ul>
-      <h2>Resumo do Pedido</h2>
-      <p>Subtotal: R$ 100,00</p>
-      <p>Frete: R$ 10,00</p>
-      <p>Total: R$ 110,00</p>
-      <h2>Informações de Entrega</h2>
-      <p>Endereço: Rua Exemplo, 123</p>
-      <p>Cidade: Exemplo</p>
-      <p>Bairro: Exemplo</p>
-      <h2>Informações de Pagamento</h2>
-      <p>Forma de pagamento: Cartão de Crédito</p>
-      <button onClick={() => window.location.href = '/cliente'}>Voltar para a página inicial</button>
-      <p>Obrigado por comprar conosco!</p>
-      <p>Se precisar de ajuda, entre em contato com nosso suporte.</p>
-      <p>Você pode acompanhar o status do seu pedido na sua conta.</p>
-    </div>
+    <Box p={2}>
+      <Typography variant="h4" textAlign="center" gutterBottom>
+        Pedido N° {pedido?.idPedido || "N/A"}
+      </Typography>
+      <Typography variant="h6" textAlign="center" gutterBottom>
+        Seu pedido foi realizado com sucesso!
+      </Typography>
+      <Divider sx={{ my: 2 }} />
+      <Typography variant="h5">Lista de Produtos</Typography>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Nome</TableCell>
+            <TableCell>Quantidade</TableCell>
+            <TableCell>Valor Unitário</TableCell>
+            <TableCell>Total</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {produtosPedido?.map((produto) => (
+            <TableRow key={produto.idProduto}>
+              <TableCell>{produto.nome}</TableCell>
+              <TableCell>{produto.quantidade}</TableCell>
+              <TableCell>R${produto.valorUnitario.toFixed(2)}</TableCell>
+              <TableCell>R${(produto.valorUnitario * produto.quantidade).toFixed(2)}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <Divider sx={{ my: 2 }} />
+      <Typography variant="h5">Resumo do Pedido</Typography>
+      <Typography>Subtotal: R${pedido?.valorTotalPedido - 10 || 0}</Typography>
+      <Typography>Frete: R$10,00</Typography>
+      <Typography>Total: R${pedido?.valorTotalPedido || 0}</Typography>
+      <Divider sx={{ my: 2 }} />
+      <Typography variant="h5">Informações de Pagamento</Typography>
+      <Typography>
+        Forma de pagamento: {pedido?.descricaoFormaPagamento || "N/A"}
+      </Typography>
+      <Divider sx={{ my: 2 }} />
+      <Typography variant="h5">Dados do Cliente</Typography>
+      <Typography>Nome: {cliente.Nome || "N/A"}</Typography>
+      <Typography>Celular: {cliente.celular || "N/A"}</Typography>
+      <Divider sx={{ my: 2 }} />
+      <Typography variant="h5">Informações de Entrega</Typography>
+      <Typography>Endereço: {cliente.logradouro || "N/A"}, {cliente.numero || "N/A"}</Typography>
+      <Typography>Bairro: {cliente.bairro || "N/A"}</Typography>
+      <Typography>Celular: {cliente.celular || "N/A"}</Typography>
+      <Divider sx={{ my: 2 }} />
+
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => (window.location.href = "/dashboard")}
+      >
+        Voltar para a página inicial
+      </Button>
+    </Box>
   );
 }
+
 export default PedidoRealizado;

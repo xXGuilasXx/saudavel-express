@@ -1,28 +1,182 @@
-import { Navigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  Grid,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Divider,
+} from "@mui/material";
+import { Add, Remove } from "@mui/icons-material";
+import db from "../database/db";
 
 function Pedido() {
-  const numeroPedido = 1000;
+  const navigate = useNavigate();
+  const [produtos, setProdutos] = useState([]);
+  const [quantidades, setQuantidades] = useState({});
+  const [subtotal, setSubtotal] = useState(0);
+  const [formasPagamento, setFormasPagamento] = useState([]);
+  const [formaPagamentoSelecionada, setFormaPagamentoSelecionada] = useState("");
+  const frete = 10;
 
-  const handleConfirm = () => {
-    return <Navigate to="/pedido-realizado" />;
+  useEffect(() => {
+    const fetchProdutos = async () => {
+      const produtosDb = await db.Produto.toArray();
+      setProdutos(produtosDb);
+      const initialQuantidades = produtosDb.reduce((acc, produto) => {
+        acc[produto.idProduto] = 0;
+        return acc;
+      }, {});
+      setQuantidades(initialQuantidades);
+    };
+    fetchProdutos();
+  }, []);
+
+  useEffect(() => {
+    const fetchFormasPagamento = async () => {
+      const formas = await db.FormaPagamento.toArray();
+      setFormasPagamento(formas);
+    };
+    fetchFormasPagamento();
+  }, []);
+
+  const handleQuantidadeChange = (idProduto, delta) => {
+    setQuantidades((prev) => {
+      const novaQuantidade = Math.max(
+        0,
+        Math.min(10, (prev[idProduto] || 0) + delta)
+      );
+      const novoSubtotal =
+        subtotal +
+        delta * produtos.find((produto) => produto.idProduto === idProduto).valorUnitario;
+      setSubtotal(novoSubtotal);
+      return { ...prev, [idProduto]: novaQuantidade };
+    });
+  };
+
+  const handleConfirmarPedido = async () => {
+    const formaPagamento = formasPagamento.find(
+      (forma) => forma.idFormaPagamento === formaPagamentoSelecionada
+    );
+
+    const pedido = {
+      idCliente: 1, // Simula cliente logado
+      idProdutos: Object.entries(quantidades)
+        // eslint-disable-next-line no-unused-vars
+        .filter(([_, quantidade]) => quantidade > 0)
+        .map(([idProduto, quantidade]) => ({
+          idProduto: Number(idProduto),
+          quantidade,
+        })),
+      valorTotalPedido: subtotal + frete,
+      idFormaPagamento: formaPagamentoSelecionada,
+      descricaoFormaPagamento: formaPagamento?.formaPagamento || "N/A",
+    };
+    await db.Pedido.add(pedido);
+    navigate("/pedido-realizado", { state: { pedido, produtos } });
   };
 
   return (
-    <div>
-      <h1>Pedido N{numeroPedido}</h1>
-      <p>Faça seu pedido!</p>
-      <h2>Lista de Produtos</h2>
-      <ul>
-        <li>Produto 1</li>
-        <li>Produto 2</li>
-        <li>Produto 3</li>
-        <li>Produto 4</li>
-        <li>Produto 5</li>
-        <li>Produto 6</li>
-      </ul>
-      <button onClick={handleConfirm}>Confirmar Pedido</button>
-    </div>
+    <Box p={2}>
+      <Typography variant="h4" textAlign="center" gutterBottom>
+        Pedido
+      </Typography>
+      <Grid container spacing={2}>
+        {produtos.map((produto) => (
+          <Grid item xs={12} sm={6} md={4} key={produto.idProduto}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6">{produto.nome}</Typography>
+                <Box
+                  className="rounded-lg overflow-hidden"
+                  style={{
+                    width: "100%",
+                    height: "150px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "#f5f5f5",
+                  }}
+                >
+                  <img
+                    src={new URL(`../assets/images/produtos/${produto.idProduto}.png`, import.meta.url).href}
+                    alt={produto.nome}
+                    style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "cover" }}
+                  />
+                </Box>
+                <Typography>{produto.descricao}</Typography>
+                <Typography>Valor Unitário: R${produto.valorUnitario.toFixed(2)}</Typography>
+                <Typography>
+                  Total: R$
+                  {(produto.valorUnitario * (quantidades[produto.idProduto] || 0)).toFixed(2)}
+                </Typography>
+                <Box display="flex" alignItems="center" mt={2}>
+                  <IconButton
+                    onClick={() => handleQuantidadeChange(produto.idProduto, -1)}
+                    disabled={(quantidades[produto.idProduto] || 0) === 0}
+                  >
+                    <Remove />
+                  </IconButton>
+                  <Typography>{quantidades[produto.idProduto] || 0}</Typography>
+                  <IconButton
+                    onClick={() => handleQuantidadeChange(produto.idProduto, 1)}
+                    disabled={(quantidades[produto.idProduto] || 0) === 10}
+                  >
+                    <Add />
+                  </IconButton>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+      <Box mt={4}>
+        <Typography variant="h5">Resumo do Pedido</Typography>
+        <Typography>Subtotal: R${subtotal.toFixed(2)}</Typography>
+        <Typography>Frete: R${frete.toFixed(2)}</Typography>
+        <Typography>Total: R${(subtotal + frete).toFixed(2)}</Typography>
+        <Divider sx={{ my: 2 }} />
+        <FormControl fullWidth>
+          <InputLabel id="forma-pagamento-label">Forma de Pagamento</InputLabel>
+          <Select
+            labelId="forma-pagamento-label"
+            value={formaPagamentoSelecionada}
+            onChange={(e) => setFormaPagamentoSelecionada(e.target.value)}
+          >
+            {formasPagamento.map((forma) => (
+              <MenuItem key={forma.idFormaPagamento} value={forma.idFormaPagamento}>
+                {forma.formaPagamento}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Box mt={2} display="flex" justifyContent="space-between">
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => navigate("/dashboard")}
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleConfirmarPedido}
+            disabled={subtotal === 0}
+          >
+            Confirmar Pedido
+          </Button>
+        </Box>
+      </Box>
+    </Box>
   );
 }
+
 export default Pedido;
-// Compare this snippet from src/pages/Produto.jsx:
