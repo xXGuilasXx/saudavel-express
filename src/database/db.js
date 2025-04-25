@@ -1,0 +1,88 @@
+import Dexie from 'dexie';
+
+// Criação do banco de dados
+const db = new Dexie('SaudavelExpressDB');
+
+// Definição das tabelas e seus campos
+db.version(1).stores({
+  Cliente:
+    '++idCliente, Nome, email, senha, logradouro, numero, bairro, celular',
+  Produto: '++idProduto, nome, descricao, valorUnitario, urlImg',
+  Pedido: '++idPedido, idCliente, idProdutos, valorTotalPedido, idFormaPagamento',
+  FormaPagamento: '++idFormaPagamento, formaPagamento'
+});
+
+// Exemplo de inicialização com dados (opcional)
+db.on('populate', () => {
+  db.Produto.bulkAdd([
+    {
+      nome: 'Produto 1',
+      descricao: 'Descrição do Produto 1',
+      valorUnitario: 10.0,
+      urlImg: 'url1.jpg',
+    },
+    {
+      nome: 'Produto 2',
+      descricao: 'Descrição do Produto 2',
+      valorUnitario: 20.0,
+      urlImg: 'url2.jpg',
+    },
+    {
+      nome: 'Produto 3',
+      descricao: 'Descrição do Produto 3',
+      valorUnitario: 30.0,
+      urlImg: 'url3.jpg',
+    },
+    {
+      nome: 'Produto 4',
+      descricao: 'Descrição do Produto 4',
+      valorUnitario: 40.0,
+      urlImg: 'url4.jpg',
+    },
+    {
+      nome: 'Produto 5',
+      descricao: 'Descrição do Produto 5',
+      valorUnitario: 50.0,
+      urlImg: 'url5.jpg',
+    },
+    {
+      nome: 'Produto 6',
+      descricao: 'Descrição do Produto 6',
+      valorUnitario: 60.0,
+      urlImg: 'url6.jpg',
+    },
+    {
+      nome: 'Produto 7',
+      descricao: 'Descrição do Produto 7',
+      valorUnitario: 70.0,
+      urlImg: 'url7.jpg',
+    },
+    {
+      nome: 'Produto 8',
+      descricao: 'Descrição do Produto 8',
+      valorUnitario: 80.0,
+      urlImg: 'url8.jpg',
+    },
+    {
+      nome: 'Produto 9',
+      descricao: 'Descrição do Produto 9',
+      valorUnitario: 90.0,
+      urlImg: 'url9.jpg',
+    },
+    {
+      nome: 'Produto 10',
+      descricao: 'Descrição do Produto 10',
+      valorUnitario: 100.0,
+      urlImg: 'url10.jpg',
+    },
+  ]);
+
+    db.FormaPagamento.bulkAdd([
+        { formaPagamento: 'Cartão de Crédito' },
+        { formaPagamento: 'Cartão de Débito' },
+        { formaPagamento: 'Dinheiro' },
+        { formaPagamento: 'Pix' },
+    ]);
+});
+
+export default db;
