@@ -84,6 +84,17 @@ db.on('populate', () => {
     { formaPagamento: 'Dinheiro' },
     { formaPagamento: 'Pix' },
   ]);
+
+  // Adicionar cliente de teste
+  db.Cliente.add({
+    Nome: 'Usuário Teste',
+    email: 'teste@exemplo.com',
+    senha: '123',
+    logradouro: 'Rua dos Testes',
+    numero: '123',
+    bairro: 'Bairro Fictício',
+    celular: '999999999',
+  });
 });
 
 export default db;
