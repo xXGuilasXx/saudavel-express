@@ -1,10 +1,11 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Box, Typography, Divider, Table, TableBody, TableCell, TableHead, TableRow, Button } from "@mui/material";
 import db from "../database/db";
 
 function PedidoRealizado() {
   const { state } = useLocation();
+  const navigate = useNavigate(); // Adicionar useNavigate
   const { pedido, produtos } = state || {};
   const [cliente, setCliente] = useState({});
 
@@ -75,7 +76,7 @@ function PedidoRealizado() {
       <Button
         variant="contained"
         color="primary"
-        onClick={() => (window.location.href = "/dashboard")}
+        onClick={() => navigate("/dashboard")} // Alterar para usar navigate
       >
         Voltar para a página inicial
       </Button>
