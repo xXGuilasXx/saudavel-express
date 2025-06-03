@@ -109,6 +109,12 @@ function Pedido() {
       return;
     }
 
+    // Adicionar verificação explícita aqui também, embora o botão deva estar desabilitado
+    if (subtotal === 0 || !formaPagamentoSelecionada) {
+      alert("Por favor, adicione produtos ao seu pedido e selecione uma forma de pagamento.");
+      return;
+    }
+
     const formaPagamento = formasPagamento.find(
       (forma) => forma.idFormaPagamento === formaPagamentoSelecionada
     );
@@ -225,7 +231,7 @@ function Pedido() {
             variant="contained"
             color="primary"
             onClick={handleConfirmarPedido}
-            disabled={subtotal === 0}
+            disabled={subtotal === 0 || !formaPagamentoSelecionada} // Modificado aqui
           >
             Confirmar Pedido
           </StyledButton>
