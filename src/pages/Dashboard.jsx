@@ -23,7 +23,7 @@ function Dashboard() {
       }
     };
     fetchClienteEPedidos();
-  }, []);
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("loggedUserId"); // Remove o ID do usuário logado
