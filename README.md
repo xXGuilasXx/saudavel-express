@@ -35,7 +35,7 @@ Facilitar a divulgação dos produtos, o gerenciamento de pedidos e pagamentos o
    ```bash
    npm run dev
    ```
-4. Acesse no navegador: [http://localhost:5173](http://localhost:5173)
+4. Acesse no navegador: [[http://localhost:5173](https://saudavel-express.netlify.app/login)]([http://localhost:5173](https://saudavel-express.netlify.app/login))
 
 ## Equipe
 
